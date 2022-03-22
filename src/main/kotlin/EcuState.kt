@@ -29,14 +29,17 @@ fun Route.addStateRoutes() {
 data class EcuState(
     var sessionState: SessionState? = SessionState.DEFAULT,
     var securityAccess: SecurityAccess? = SecurityAccess.LOCKED,
+    var bootSoftwareVersions: List<SoftwareVersionIdentifier> = emptyList(),
+    var applicationSoftwareVersions: List<SoftwareVersionIdentifier> = emptyList(),
+    var vin: String = "ITS_A_WIN_VIN_123",
     var seed: ByteArray? = null,
 )
 
-enum class SessionState {
-    DEFAULT,
-    PROGRAMMING,
-    EXTENDED,
-    SAFETY
+enum class SessionState(val value: Byte) {
+    DEFAULT(0x01),
+    PROGRAMMING(0x02),
+    EXTENDED(0x03),
+    SAFETY(0x04)
 }
 
 enum class SecurityAccess(val level: Byte) {

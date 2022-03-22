@@ -18,7 +18,7 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     // You should use the latest released stable version
-    implementation("com.github.doip-sim-ecu:doip-sim-ecu-dsl:0.7.3")
+    implementation("com.github.doip-sim-ecu:doip-sim-ecu-dsl:0.8.2")
     implementation("io.ktor:ktor-server-core:1.6.8")
     implementation("io.ktor:ktor-server-cio:1.6.8")
     implementation("io.ktor:ktor-serialization:1.6.8")
