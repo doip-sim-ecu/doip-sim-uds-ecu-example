@@ -1,5 +1,6 @@
 import io.ktor.application.*
 import io.ktor.features.*
+import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.serialization.*
@@ -9,6 +10,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import library.SimulatedEcu
+import kotlin.system.exitProcess
 
 @OptIn(ExperimentalSerializationApi::class)
 fun startEmbeddedWebserver() {
@@ -24,11 +26,15 @@ fun startEmbeddedWebserver() {
         }
         routing {
             get ("/") {
-
                 val data = gatewayInstances.map { it.toDto() }
                 call.respond(data)
             }
             addStateRoutes()
+            addRecordingRoutes()
+            post("/shutdown") {
+                call.respond(HttpStatusCode.OK)
+                exitProcess(0)
+            }
         }
     }.start(wait = true)
 }

@@ -18,12 +18,19 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     // You should use the latest released stable version
-    implementation("com.github.doip-sim-ecu:doip-sim-ecu-dsl:0.8.2")
+    implementation("com.github.doip-sim-ecu:doip-sim-ecu-dsl:0.8.4")
     implementation("io.ktor:ktor-server-core:1.6.8")
     implementation("io.ktor:ktor-server-cio:1.6.8")
     implementation("io.ktor:ktor-serialization:1.6.8")
     implementation("ch.qos.logback:logback-classic:1.2.11")
+
+    testImplementation(kotlin("test"))
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.25")
 }
+
+project.setProperty("mainClassName", "MainKt")
 
 tasks {
     application {
@@ -38,3 +45,4 @@ allOpen {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
 }
+

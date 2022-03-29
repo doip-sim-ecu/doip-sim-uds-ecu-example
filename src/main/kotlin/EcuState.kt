@@ -2,15 +2,18 @@ import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.ktor.util.pipeline.*
 import kotlinx.serialization.Serializable
+import library.toHexString
 
-fun findByEcuName(ecuName: String): SimEcu? {
+suspend fun PipelineContext<Unit, ApplicationCall>.findByEcuName(ecuName: String): SimEcu? {
     gatewayInstances.forEach {
         val ecu = it.findEcuByName(ecuName)
         if (ecu != null) {
             return ecu
         }
     }
+    call.respond(HttpStatusCode.NotFound)
     return null
 }
 
@@ -20,8 +23,33 @@ fun Route.addStateRoutes() {
         call.respond(HttpStatusCode.NoContent)
     }
     get("/{ecu}/state") {
-        val ecu = findByEcuName(call.parameters["ecu"]!!) ?: return@get call.respond(HttpStatusCode.NotFound)
+        val ecu = findByEcuName(call.parameters["ecu"]!!) ?: return@get
         call.respond(HttpStatusCode.OK, ecu.ecuState())
+    }
+}
+
+fun SimEcu.recordedData() =
+    this.storedProperty { mutableListOf<String>() }
+
+fun Route.addRecordingRoutes() {
+    post("/{ecu}/record") {
+        val ecu = findByEcuName(call.parameters["ecu"]!!) ?: return@post
+        ecu.addOrReplaceEcuInterceptor("RECORDER", alsoCallWhenEcuIsBusy = true) {
+            val recordedData by ecu.recordedData()
+            recordedData.add(this.message.toHexString(separator = ""))
+            false
+        }
+        call.respond(HttpStatusCode.NoContent)
+    }
+    delete("/{ecu}/record") {
+        val ecu = findByEcuName(call.parameters["ecu"]!!) ?: return@delete
+        ecu.removeInterceptor("RECORDER")
+        call.respond(HttpStatusCode.NoContent)
+    }
+    get("/{ecu}/record") {
+        val ecu = findByEcuName(call.parameters["ecu"]!!) ?: return@get
+        val recordedData by ecu.recordedData()
+        call.respond(HttpStatusCode.OK, recordedData)
     }
 }
 
@@ -54,7 +82,7 @@ enum class SecurityAccess(val level: Byte) {
     }
 }
 
-val initialStateByEcu: MutableMap<String, EcuState> = mutableMapOf()
+private val initialStateByEcu: MutableMap<String, EcuState> = mutableMapOf()
 
 fun RequestsData.setInitialState(state: EcuState) {
     initialStateByEcu[this.name] = state
