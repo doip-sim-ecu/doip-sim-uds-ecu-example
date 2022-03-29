@@ -1,0 +1,36 @@
+# This is experimental and doesn't necessarily work, mostly to see how much of a PITA using
+# graalvm/native-image with ktor (esp. ktor-network) is.
+FROM ghcr.io/graalvm/graalvm-ce:ol8-java17 as build
+
+RUN gu install native-image
+WORKDIR /app
+RUN mkdir -p /app
+
+COPY * /app/
+COPY src /app/src/
+COPY gradle /app/gradle/
+
+RUN ./gradlew -i --no-daemon shadowJar
+RUN cd build &&\
+    native-image -H:+ReportUnsupportedElementsAtRuntime \
+    -H:EnableURLProtocols=http,https \
+    --enable-all-security-services \
+    --allow-incomplete-classpath \
+    --no-fallback \
+    -jar "$(find . -iname '*-all.jar')" app-runner
+
+#     --initialize-at-run-time=io.ktor,kotlinx,kotlin,org.slf4j \
+
+FROM ubuntu:21.10
+
+EXPOSE 8000/tcp
+EXPOSE 13400/udp
+EXPOSE 13400/tcp
+EXPOSE 3496/tcp
+
+WORKDIR /app
+
+RUN mkdir -p /app
+COPY --from=build /app/build/app-runner /app/app-runner
+
+ENTRYPOINT ["./app-runner"]
