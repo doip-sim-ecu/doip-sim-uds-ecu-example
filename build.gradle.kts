@@ -1,7 +1,8 @@
 plugins {
-    kotlin("jvm") version "1.6.10"
-    kotlin("plugin.allopen") version "1.6.10"
-    kotlin("plugin.serialization") version "1.6.10"
+    val kotlinVersion = "1.6.21"
+    kotlin("jvm") version kotlinVersion
+    kotlin("plugin.allopen") version kotlinVersion
+    kotlin("plugin.serialization") version kotlinVersion
     id("com.github.johnrengelman.shadow") version "7.1.0"
     application
 }
@@ -17,11 +18,15 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
 
+    val ktorVersion = "2.0.0"
     // You should use the latest released stable version
-    implementation("com.github.doip-sim-ecu:doip-sim-ecu-dsl:0.8.4")
-    implementation("io.ktor:ktor-server-core:1.6.8")
-    implementation("io.ktor:ktor-server-cio:1.6.8")
-    implementation("io.ktor:ktor-serialization:1.6.8")
+    implementation("com.github.doip-sim-ecu:doip-sim-ecu-dsl:0.9.0")
+    implementation("io.ktor:ktor-server-core:$ktorVersion")
+    implementation("io.ktor:ktor-server-cio:$ktorVersion")
+    implementation("io.ktor:ktor-serialization:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+
     implementation("ch.qos.logback:logback-classic:1.2.11")
 
     testImplementation(kotlin("test"))
