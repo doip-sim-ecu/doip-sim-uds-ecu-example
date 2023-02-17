@@ -1,5 +1,5 @@
 plugins {
-    val kotlinVersion = "1.7.0"
+    val kotlinVersion = "1.8.10"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.allopen") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
@@ -19,20 +19,20 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
 
-    val ktorVersion = "2.0.2"
+    val ktorVersion = "2.2.3"
     // You should use the latest released stable version
-    implementation("io.github.doip-sim-ecu:doip-sim-ecu-dsl:0.9.5")
+    implementation("io.github.doip-sim-ecu:doip-sim-ecu-dsl:0.9.16")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-cio:$ktorVersion")
     implementation("io.ktor:ktor-serialization:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
 
-    implementation("ch.qos.logback:logback-classic:1.2.11")
+    implementation("ch.qos.logback:logback-classic:1.3.4")
 
     testImplementation(kotlin("test"))
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.25")
 }
 
@@ -49,6 +49,12 @@ allOpen {
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions.jvmTarget = "1.8"
     kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    targetCompatibility = "1.8"
+    sourceCompatibility = "1.8"
 }
 

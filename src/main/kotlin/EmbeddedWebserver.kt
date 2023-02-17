@@ -12,31 +12,8 @@ import kotlinx.serialization.json.Json
 import library.SimulatedEcu
 import kotlin.system.exitProcess
 
-@OptIn(ExperimentalSerializationApi::class)
 fun startEmbeddedWebserver() {
-    embeddedServer(CIO, port = 8000) {
-        install(ContentNegotiation) {
-            json(Json {
-                prettyPrint = true
-                isLenient = true
-                encodeDefaults = true
-                ignoreUnknownKeys = true
-                explicitNulls = false
-            })
-        }
-        routing {
-            get ("/") {
-                val data = gatewayInstances.map { it.toDto() }
-                call.respond(data)
-            }
-            addStateRoutes()
-            addRecordingRoutes()
-            post("/shutdown") {
-                call.respond(HttpStatusCode.OK)
-                exitProcess(0)
-            }
-        }
-    }.start(wait = true)
+    embeddedServer(CIO, port = 8000, module = Application::appModule).start(wait = true)
 }
 
 fun SimGateway.toDto(): GatewayDataDto {
@@ -70,3 +47,28 @@ data class EcuDataDto(
     var physicalAddress: Short,
     var functionalAddress: Short,
 )
+
+@OptIn(ExperimentalSerializationApi::class)
+fun Application.appModule() {
+    install(ContentNegotiation) {
+        json(Json {
+            prettyPrint = true
+            isLenient = true
+            encodeDefaults = true
+            ignoreUnknownKeys = true
+            explicitNulls = false
+        })
+    }
+    routing {
+        get("/") {
+            val data = gatewayInstances().map { it.toDto() }
+            call.respond(data)
+        }
+        addStateRoutes()
+        addRecordingRoutes()
+        post("/shutdown") {
+            call.respond(HttpStatusCode.OK)
+            exitProcess(0)
+        }
+    }
+}

@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 import library.toHexString
 
 suspend fun PipelineContext<Unit, ApplicationCall>.findByEcuName(ecuName: String): SimEcu? {
-    gatewayInstances.forEach {
+    gatewayInstances().forEach {
         val ecu = it.findEcuByName(ecuName)
         if (ecu != null) {
             return ecu
@@ -19,7 +19,7 @@ suspend fun PipelineContext<Unit, ApplicationCall>.findByEcuName(ecuName: String
 
 fun Route.addStateRoutes() {
     post("/reset") {
-        gatewayInstances.forEach { it.reset() }
+        gatewayInstances().forEach { it.reset() }
         call.respond(HttpStatusCode.NoContent)
     }
     get("/{ecu}/state") {
@@ -63,6 +63,7 @@ data class EcuState(
     var seed: ByteArray? = null,
 )
 
+@Serializable
 enum class SessionState(val value: Byte) {
     DEFAULT(0x01),
     PROGRAMMING(0x02),
@@ -70,6 +71,7 @@ enum class SessionState(val value: Byte) {
     SAFETY(0x04)
 }
 
+@Serializable
 enum class SecurityAccess(val level: Byte) {
     LOCKED(0),
     LEVEL_3(3),
