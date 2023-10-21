@@ -17,7 +17,7 @@ fun startEmbeddedWebserver() {
 }
 
 fun SimGateway.toDto(): GatewayDataDto {
-    val gatewayEcu = this.ecus.first { it.config.physicalAddress == this.config.logicalAddress }
+    val gatewayEcu = this.ecus.first { it.config.logicalAddress == this.config.logicalAddress }
     return GatewayDataDto(
         name = this.config.name,
         logicalAddress =  this.config.logicalAddress,
@@ -29,7 +29,7 @@ fun SimGateway.toDto(): GatewayDataDto {
 fun SimulatedEcu.toDto(): EcuDataDto =
     EcuDataDto(
         name = this.name,
-        physicalAddress = this.config.physicalAddress,
+        physicalAddress = this.config.logicalAddress,
         functionalAddress = this.config.functionalAddress,
     )
 

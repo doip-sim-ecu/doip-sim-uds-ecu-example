@@ -1,5 +1,5 @@
 plugins {
-    val kotlinVersion = "1.8.10"
+    val kotlinVersion = "1.9.10"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.allopen") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
@@ -19,9 +19,9 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
 
-    val ktorVersion = "2.2.3"
+    val ktorVersion = "2.3.5"
     // You should use the latest released stable version
-    implementation("io.github.doip-sim-ecu:doip-sim-ecu-dsl:0.9.16")
+    implementation("io.github.doip-sim-ecu:doip-sim-ecu-dsl:0.10.1")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-cio:$ktorVersion")
     implementation("io.ktor:ktor-serialization:$ktorVersion")
@@ -48,13 +48,6 @@ allOpen {
     annotation("kotlinx.serialization.Serializable")
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions.jvmTarget = "1.8"
-    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+kotlin {
+    jvmToolchain(8)
 }
-
-tasks.withType<JavaCompile>().configureEach {
-    targetCompatibility = "1.8"
-    sourceCompatibility = "1.8"
-}
-

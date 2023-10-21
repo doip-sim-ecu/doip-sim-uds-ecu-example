@@ -31,7 +31,7 @@ fun udsGateway(gateway: CreateGatewayFunc) {
 
 fun udsEcu(ecu: CreateEcuFunc) {
     ecu("UDSECU") {
-        physicalAddress = 0x1020
+        logicalAddress = 0x1020
         functionalAddress = 0x5050
 
         setInitialState(
